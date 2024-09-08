@@ -1,6 +1,12 @@
 #include <windows.h>
 #include <stdio.h>
 
+#if defined( DEBUG )
+#define FRRINTF fprintf
+#else
+#define FRRINTF
+#endif
+
 extern "C" __declspec(dllexport) HANDLE OpenFileUtil(const wchar_t * file_name)
 {
 #if _WIN32_WINNT >= 0x0602
@@ -22,20 +28,6 @@ extern "C" __declspec(dllexport) DWORD ProcessId()
 
 BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpvReserved)
 {
-  printf("util.DllMain: %x %d\n", hinstDLL, fdwReason);
-  switch (fdwReason)
-  {
-    case DLL_PROCESS_ATTACH:
-      break;
-
-    case DLL_THREAD_ATTACH:
-      break;
-
-    case DLL_THREAD_DETACH:
-      break;
-
-    case DLL_PROCESS_DETACH:
-      break;
-  }
-  return TRUE;
+    FRRINTF(stderr,"util.DllMain: %x %d\n", hinstDLL, fdwReason);
+    return TRUE;
 }

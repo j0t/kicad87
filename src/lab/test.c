@@ -2,48 +2,44 @@
 #include <windows.h>
 #include <ntdef.h>
 
-#if defined( IMPLICIT_LOADING )
-
+#if defined( USE_IMPORT_LIB )
 extern "C" {
-
 __declspec(dllimport) DWORD ProcessId();
 __declspec(dllimport) HANDLE OpenFileUtil(const wchar_t * file_name);
-
 }
 #else
 typedef DWORD (*DWORD_VOID_PTR)();
 typedef HANDLE (*OpenFileUtilPtr)(const wchar_t * file_name);
 
-DWORD_VOID_PTR ProcessId, Unregister;
+DWORD_VOID_PTR ProcessId;
 OpenFileUtilPtr OpenFileUtil;
 #endif
 
 int main()
 {
-    puts("Starting test");
+    fprintf(stderr, "Starting test\n");
     
-#if !defined( IMPLICIT_LOADING )
+#if !defined( USE_IMPORT_LIB )
     HMODULE hModule = LoadLibraryW(L"fwd_test.dll");
-    
     if( !hModule )
     {
-        puts("Couldn't load fwd_test.dll");
+        fprintf(stderr, "Couldn't load fwd_test.dll\n");
         return 1;
     }
     
-    puts("GetProcAddress for ProcessId");
+    fprintf(stderr, "GetProcAddress for ProcessId\n");
     ProcessId = (DWORD_VOID_PTR) GetProcAddress(hModule, "ProcessId");
-    if( ProcessId ) puts("OK"); else puts("FAIL");
+    fprintf(stderr, ProcessId ? "OK\n": "FAIL\n" );
     
-    puts("GetProcAddress for OpenFileUtil");
+    fprintf(stderr, "GetProcAddress for OpenFileUtil\n");
     OpenFileUtil = (OpenFileUtilPtr) GetProcAddress(hModule, "OpenFileUtil");
-    if( OpenFileUtil ) puts("OK"); else puts("FAIL");
-    
+    fprintf(stderr, OpenFileUtil ? "OK\n": "FAIL\n" );
 #endif
+
     if( ProcessId )
     {
         DWORD pid = ProcessId();
-        printf("DLLPID: %d\n", pid);
+        fprintf(stderr, "DLLPID: %d\n", pid);
     }
 
     if( OpenFileUtil )
@@ -51,7 +47,7 @@ int main()
         HANDLE hFile = OpenFileUtil(L"test.txt");
         if( INVALID_HANDLE_VALUE == hFile )
         {
-            puts("Error opening file");
+            fprintf(stderr, "Error opening file\n");
             return 1;
         }
 
@@ -59,16 +55,16 @@ int main()
         DWORD read = 0;
         if( !ReadFile( hFile, buffer, sizeof(buffer), &read, NULL ) )
         {
-            puts("Error reading file");
+            fprintf(stderr, "Error reading file\n");
             return 1;
         }
 
-        printf("%d bytes: %s\n", read, buffer);
+        fprintf(stderr, "%d bytes: %s\n", read, buffer);
 
         CloseHandle( hFile );
     }
 
-#if !defined( IMPLICIT_LOADING )
+#if !defined( USE_IMPORT_LIB )
     FreeLibrary( hModule );
 #endif
     return 0;
