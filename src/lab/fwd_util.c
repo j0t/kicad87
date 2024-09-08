@@ -1,10 +1,17 @@
 #include <stdio.h>
 #include <windows.h>
 #include <ntdef.h>
+#include <delayimp.h>
+
+#if defined( DEBUG )
+#define FRRINTF fprintf
+#else
+#define FRRINTF
+#endif
 
 #include "ldr_dll.h"
 
-HANDLE WINAPI CreateFile2Impl(
+static HANDLE WINAPI CreateFile2Impl(
         PCWSTR FileName,
         ULONG DesiredAccess,
         ULONG ShareMode,
@@ -42,7 +49,7 @@ HANDLE WINAPI CreateFile2Impl(
 
 #define RVA(T,B,O) ((T)(O+(char *)B))
 
-BOOL analyzeImportDescriptor( PIMAGE_IMPORT_DESCRIPTOR importDescriptor
+static BOOL analyzeImportDescriptor( PIMAGE_IMPORT_DESCRIPTOR importDescriptor
                             , HMODULE baseAddress
                             , const char *apiName
                             , const char *newapiName
@@ -87,7 +94,7 @@ BOOL analyzeImportDescriptor( PIMAGE_IMPORT_DESCRIPTOR importDescriptor
     return FALSE;
 }
 
-PIMAGE_IMPORT_DESCRIPTOR FindImportDescriptor( HMODULE baseAddress, const char * dllName )
+static PIMAGE_IMPORT_DESCRIPTOR FindImportDescriptor( HMODULE baseAddress, const char * dllName )
 {    
     PIMAGE_DOS_HEADER dosHeader = (PIMAGE_DOS_HEADER)baseAddress;
 
@@ -114,22 +121,22 @@ PIMAGE_IMPORT_DESCRIPTOR FindImportDescriptor( HMODULE baseAddress, const char *
        if( !nameOfDLL )
            break;
 
-       if( !strcmp( nameOfDLL, dllName ) )
+       if( !stricmp( nameOfDLL, dllName ) )
            return &importDescriptor[index];
     }
     return NULL;
 }
 
-HMODULE DLLBase = 0;
-PIMAGE_IMPORT_DESCRIPTOR K32Descr =  NULL;
+static HMODULE DLLBase = 0;
+static PIMAGE_IMPORT_DESCRIPTOR K32Descr =  NULL;
 
-VOID CALLBACK OnLoadHook( ULONG NotificationReason,
+static VOID CALLBACK OnLoadHook( ULONG NotificationReason,
                        PLDR_DLL_NOTIFICATION_DATA NotificationData,
                        PVOID Context )
 {
     PCUNICODE_STRING BaseDllName = NotificationData->Loaded.BaseDllName;
     
-    printf("%Z NotificationReason %d\n", BaseDllName, NotificationReason );
+    FRRINTF(stderr, "fwd_util.OnLoadHook: %Z NotificationReason %d\n", BaseDllName, NotificationReason );
     
     if( NotificationReason != LDR_DLL_NOTIFICATION_REASON_LOADED )
         return;
@@ -142,29 +149,45 @@ VOID CALLBACK OnLoadHook( ULONG NotificationReason,
          DLLBase = (HMODULE)NotificationData->Loaded.DllBase;         
          K32Descr = FindImportDescriptor( DLLBase, "KERNEL32.dll" );
          if( K32Descr )
-             analyzeImportDescriptor( K32Descr, DLLBase, "CreateFile2", "CreateFileW", 0 );
-    }
-    else
-    {    // 2. step (with provided DLLBase && K32Descr)
-         if( DLLBase && K32Descr )
          {
-             // redirect IAT entry for CreateFileW -> CreateFile2Impl
-             analyzeImportDescriptor( K32Descr, DLLBase, "CreateFileW", NULL, (ULONGLONG)CreateFile2Impl );
-             // done
-             DLLBase = 0;
-             K32Descr = NULL;
+             BOOL r = analyzeImportDescriptor( K32Descr, DLLBase, "CreateFile2", "CreateFileW", 0 );
+             FRRINTF(stderr, "fwd_util.OnLoadHook: CreateFile2 -> CreateFileW: %s\n", r ? "OK":"FAILED" );
          }
     }
 }
 
-HANDLE g_Cookie;
+static FARPROC WINAPI dllDelayLoadHook( unsigned dliNotify, PDelayLoadInfo pdli )
+{
+    if (dliNotify == dliNotePreLoadLibrary)
+    {
+        // 2. step: patch CreateFileW to CreateFile2Impl
+        FRRINTF(stderr, "fwd_util.dllDelayLoadHook dliNotePreLoadLibrary %s\n", pdli->szDll);
+        HMODULE hModule = LoadLibraryA(pdli->szDll);
+        
+        if( hModule == DLLBase && K32Descr )
+        {
+            BOOL r = analyzeImportDescriptor( K32Descr, DLLBase, "CreateFileW", NULL, (ULONGLONG)CreateFile2Impl );
+            FRRINTF(stderr, "fwd_util.OnLoadHook: CreateFileW <- CreateFile2Impl: %s\n", r ? "OK":"FAILED" );
+            
+            DLLBase = 0;
+            K32Descr = NULL;
+        }
+        
+        return (FARPROC)hModule;
+    }
+    return NULL;
+}
 
-void RegisterHook()
+PfnDliHook __pfnDliNotifyHook2 = dllDelayLoadHook;
+
+static HANDLE g_Cookie;
+
+static void RegisterHook()
 {
     LdrRegisterDllNotification( 0, &OnLoadHook, NULL, &g_Cookie );
 }
 
-void UnregisterHook()
+static void UnregisterHook()
 {
     LdrUnregisterDllNotification( g_Cookie );
     g_Cookie = NULL;
@@ -172,20 +195,14 @@ void UnregisterHook()
 
 BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpvReserved)
 {
-    printf("fwd_util.DllMain: %x %d\n", hinstDLL, fdwReason);
+    FRRINTF(stderr, "fwd_util.DllMain: %x %d\n", hinstDLL, fdwReason);
     
     switch (fdwReason)
     {
         case DLL_PROCESS_ATTACH:
              RegisterHook();
              break;
-            
-        case DLL_THREAD_ATTACH:
-            break;
-
-        case DLL_THREAD_DETACH:
-            break;
-
+             
         case DLL_PROCESS_DETACH:
              UnregisterHook();
              break;
