@@ -5,8 +5,9 @@ __imp_Table:
 	.space 16
 	
 	.text
-    .globl setup
-setup:
-	movq __imp_Table(%rip), %rax
+    .globl setupTable
+setupTable:
+    # extern "C" void setupTable( FARPROC )
+	movq %rcx, __imp_Table(%rip)
     ret
 	

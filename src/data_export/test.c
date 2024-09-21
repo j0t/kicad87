@@ -4,32 +4,26 @@
 
 typedef void (*fptr)();
 
-//#if !defined( USE_IMPORT_LIB )
-//fptr *Table;
-//#else
-//__declspec(dllimport) fptr Table[2]; // working with import library
-__declspec(dllimport) fptr Table[]; // working with import library
-//__declspec(dllimport) fptr * Table; // do not working with import library
-//#endif
 
-extern "C" void setup();
+__declspec(dllimport) fptr Table[]; // working with import library
+//__declspec(dllimport) fptr * Table;
+
+extern "C" void setupTable( FARPROC );
 
 int main()
 {
     fprintf(stderr, "Starting test\n");
 
-//#if !defined( USE_IMPORT_LIB )    
+#if !defined( USE_IMPORT_LIB )
     HMODULE hModule = LoadLibraryW(L"util.dll");
     if( !hModule )
-   {
+    {
         fprintf(stderr, "Couldn't load util.dll\n");
         return 1;
     }
-//    fprintf(stderr, "GetProcAddress for Table\n");
-    //GetProcAddress(hModule, "Table");
-    //setup();
-//    fprintf(stderr, Table ? "OK\n": "FAIL\n" );
-//#endif
+    fprintf(stderr, "GetProcAddress for Table\n");
+    setupTable( GetProcAddress(hModule, "Table") );
+#endif
 
     if( Table[0] ) 
         Table[0]();
@@ -37,9 +31,9 @@ int main()
     if( Table[1] )
         Table[1]();
     
-//#if !defined( USE_IMPORT_LIB )
-    //FreeLibrary( hModule );
-//#endif  
+#if !defined( USE_IMPORT_LIB )
+    FreeLibrary( hModule );
+#endif
     return 0;
 }
 /*
