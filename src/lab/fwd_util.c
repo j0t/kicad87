@@ -3,13 +3,13 @@
 #include <ntdef.h>
 #include <delayimp.h>
 
+#include "ldr_dll.h"
+
 #if defined( DEBUG )
 #define FRRINTF fprintf
 #else
 #define FRRINTF
 #endif
-
-#include "ldr_dll.h"
 
 static HANDLE WINAPI CreateFile2Impl(
         PCWSTR FileName,

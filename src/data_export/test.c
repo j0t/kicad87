@@ -5,7 +5,7 @@
 typedef void (*fptr)();
 
 
-__declspec(dllimport) fptr Table[]; // working with import library
+//__declspec(dllimport) fptr Table[]; // working with import library
 //__declspec(dllimport) fptr * Table;
 
 extern "C" void setupTable( FARPROC );
@@ -15,22 +15,40 @@ int main()
     fprintf(stderr, "Starting test\n");
 
 #if !defined( USE_IMPORT_LIB )
-    HMODULE hModule = LoadLibraryW(L"util.dll");
+    HMODULE hModule = LoadLibraryW(L"fwd.dll");
     if( !hModule )
     {
-        fprintf(stderr, "Couldn't load util.dll\n");
+        fprintf(stderr, "Couldn't load fwd.dll\n");
         return 1;
     }
-    fprintf(stderr, "GetProcAddress for Table\n");
-    setupTable( GetProcAddress(hModule, "Table") );
-#endif
+    
+    fptr * pTable = (fptr *)GetProcAddress(hModule, "Table");
+    if( !pTable )
+    {
+        fprintf(stderr, "Couldn't get fwd.Table symbol\n");
+    }
+    
+    FARPROC LoadUtil = GetProcAddress(hModule, "LoadUtil");
+    if( !LoadUtil )
+    {
+        fprintf(stderr, "Couldn't get fwd.LoadUtil symbol\n");
+    }
+    else
+    {
+        LoadUtil();
+    }
+    
+    pTable[0]();
+    pTable[1]();
 
+#endif
+/*
     if( Table[0] ) 
         Table[0]();
   
     if( Table[1] )
         Table[1]();
-    
+*/
 #if !defined( USE_IMPORT_LIB )
     FreeLibrary( hModule );
 #endif

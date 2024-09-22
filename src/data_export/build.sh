@@ -7,7 +7,7 @@ CV2PDB64=/c/toolz/cv2pdb64
 
 # LINK_OPTS=-s
 # -DDEBUG
-CC_OPTS='-ggdb -O0 -DUNICODE -D_WIN32_WINNT=0x0602'
+CC_OPTS='-ggdb -O0 -DUNICODE -D_WIN32_WINNT=0x0602 -DDEBUG'
 
 # build test.dll
 ${GCC} ${CC_OPTS} -c -o util.o util.c
@@ -20,11 +20,14 @@ EXPORTS
 Table DATA
 EOF
 
-${DLLTOOL} --input-def util.def --output-lib libutil.a
+IMPLIB_OPT=--output-lib
+
+# we are using delayed load
+IMPLIB_OPT=--output-delaylib
+
+${DLLTOOL} --input-def util.def ${IMPLIB_OPT} libutil.a
 
 ar -x libutil.a
-
-#${DLLTOOL} --input-def util.def --output-delaylib libutil.a
 
 # build wrapper library
 #${GCC} ${CC_OPTS} -c -o fwd_util.o fwd_util.c
@@ -32,14 +35,17 @@ ar -x libutil.a
 
 as w.s -o w.o
 
+${GCC} ${CC_OPTS} -c -o fwd.o fwd.c
+${GCC} ${LINK_OPTS} -o fwd.dll -shared fwd.o -Wl,--subsystem,windows -lntdll
+${CV2PDB64} fwd.dll
+
 # build test.exe
 #${GCC} ${CC_OPTS} -DUSE_IMPORT_LIB -c -o test.o test.c
 ${GCC} ${CC_OPTS} -c -o test.o test.c
 
-${GCC} ${LINK_OPTS} -o t.exe test.o w.o
+#${GCC} ${LINK_OPTS} -o t.exe test.o w.o
 #${GCC} ${LINK_OPTS} -o t.exe test.o libutil_a_t.o libutil_a_h.o libutil_a_s00000.o
-
-# -L. -lutil
+${GCC} ${LINK_OPTS} -o t.exe test.o w.o -L. -lutil
 
 ${CV2PDB64} t.exe
 
