@@ -22,10 +22,10 @@ int main()
         return 1;
     }
     
-    fptr * pTable = (fptr *)GetProcAddress(hModule, "Table");
+    fptr * pTable = (fptr *)GetProcAddress(hModule, "??_7FOOTPRINT_INFO@@6B@");
     if( !pTable )
     {
-        fprintf(stderr, "Couldn't get fwd.Table symbol\n");
+        fprintf(stderr, "Couldn't get fwd.??_7FOOTPRINT_INFO@@6B@ symbol\n");
     }
     
     FARPROC LoadUtil = GetProcAddress(hModule, "LoadUtil");

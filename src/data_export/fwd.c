@@ -10,9 +10,25 @@
 #define FRRINTF
 #endif
 
-typedef void (*fptr)();
+#define DD_ENTRY1(D,N,S) void * Table_##D[S];
+#define BEGIN_DD_ENTRY2 static DataDescriptor descs[] = {
+#define DD_ENTRY2(D,N,S) {N,Table_##D,sizeof(Table_##D)},
+#define END_DD_ENTRY2  };
 
-__declspec(dllexport) fptr Table[2];
+struct DataDescriptor
+{
+    const char * name;
+    void      * table;
+    unsigned int size;
+};
+
+#define DD_ENTRY DD_ENTRY1
+#include "entries.h" // DD_ENTRY(133,"??_7FOOTPRINT_INFO@@6B@",2)
+BEGIN_DD_ENTRY2
+#undef DD_ENTRY
+#define DD_ENTRY DD_ENTRY2
+#include "entries.h"
+END_DD_ENTRY2
 
 extern "C" __declspec(dllexport) void LoadUtil()
 {
@@ -41,14 +57,17 @@ static VOID CALLBACK OnLoadHook( ULONG NotificationReason,
     {
          DLLBase = (HMODULE)NotificationData->Loaded.DllBase;        
          
-         fptr * pTable = (fptr *)GetProcAddress(DLLBase, "Table");
-         if( !pTable )
+         for( unsigned int i = 0; i < sizeof(descs)/sizeof(descs[0]); ++i )
          {
-              FRRINTF(stderr, "fwd.setup Couldn't get util.Table symbol\n");
-         }
-         else
-         {
-              memmove( Table, (const void*)pTable, sizeof(fptr)*2 );
+              FARPROC pTable = GetProcAddress(DLLBase, descs[i].name);
+              if( pTable )
+              {
+                  memmove( descs[i].table, (const void *)pTable, descs[i].size );
+              }
+              else
+              {
+                  FRRINTF(stderr, "fwd.setup Couldn't get %s symbol\n", descs[i].name); 
+              }
          }
     }
 }
