@@ -11,6 +11,26 @@
 
 #include "ldr_dll.h"
 
+#define DD_ENTRY1(D,N,S) void * Table_##D[S];
+#define BEGIN_DD_ENTRY2 static DataDescriptor descs[] = {
+#define DD_ENTRY2(D,N,S) {N,Table_##D,sizeof(Table_##D)},
+#define END_DD_ENTRY2  };
+
+struct DataDescriptor
+{
+    const char * name;
+    void      * table;
+    unsigned int size;
+};
+
+#define DD_ENTRY DD_ENTRY1
+#include "entries.h" // DD_ENTRY(133,"??_7FOOTPRINT_INFO@@6B@",2)
+BEGIN_DD_ENTRY2
+#undef DD_ENTRY
+#define DD_ENTRY DD_ENTRY2
+#include "entries.h"
+END_DD_ENTRY2
+
 static HANDLE WINAPI CreateFile2Impl(
         PCWSTR FileName,
         ULONG DesiredAccess,
@@ -141,7 +161,7 @@ static VOID CALLBACK OnLoadHook( ULONG NotificationReason,
     if( NotificationReason != LDR_DLL_NOTIFICATION_REASON_LOADED )
         return;
 
-    if( !_wcsnicmp( L"test.DLL", BaseDllName->Buffer, BaseDllName->Length/sizeof(WCHAR)) ) // loading test.dll
+    if( !_wcsnicmp( L"_eeschema.DLL", BaseDllName->Buffer, BaseDllName->Length/sizeof(WCHAR)) ) // loading test.dll
     {
          // 1. step: change import CreateFile2 -> CreateFileW
          
@@ -162,12 +182,27 @@ static FARPROC WINAPI dllDelayLoadHook( unsigned dliNotify, PDelayLoadInfo pdli 
     {
         // 2. step: patch CreateFileW to CreateFile2Impl
         FRRINTF(stderr, "fwd_util.dllDelayLoadHook dliNotePreLoadLibrary %s\n", pdli->szDll);
-        HMODULE hModule = LoadLibraryA(pdli->szDll);
+        
+        HMODULE hModule = LoadLibraryA( pdli->szDll );
         
         if( hModule == DLLBase && K32Descr )
         {
             BOOL r = analyzeImportDescriptor( K32Descr, DLLBase, "CreateFileW", NULL, (ULONGLONG)CreateFile2Impl );
             FRRINTF(stderr, "fwd_util.OnLoadHook: CreateFileW <- CreateFile2Impl: %s\n", r ? "OK":"FAILED" );
+            
+            // 3. step: copy data exports
+            for( unsigned int i = 0; i < sizeof(descs)/sizeof(descs[0]); ++i )
+            {
+                 FARPROC pTable = GetProcAddress(DLLBase, descs[i].name);
+                 if( pTable )
+                 {
+                     memmove( descs[i].table, (const void *)pTable, descs[i].size );
+                 }
+                 else
+                 {
+                     FRRINTF(stderr, "fwd_util.dllDelayLoadHook couldn't get symbol %s\n", descs[i].name); 
+                 }
+            }
             
             DLLBase = 0;
             K32Descr = NULL;

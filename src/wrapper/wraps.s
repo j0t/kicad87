@@ -105,22 +105,6 @@
 	WRAP ??4type_error@pybind11@@QEAAAEAV01@AEBV01@@Z
 	WRAP ??4value_error@pybind11@@QEAAAEAV01@$$QEAV01@@Z
 	WRAP ??4value_error@pybind11@@QEAAAEAV01@AEBV01@@Z
-	WRAP ??_7FOOTPRINT_INFO@@6B@
-	WRAP ??_7FOOTPRINT_LIST@@6B@
-	WRAP ??_7FOOTPRINT_PREVIEW_PANEL_BASE@@6B@
-	WRAP ??_7LIB_TREE_ITEM@@6B@
-	WRAP ??_7attribute_error@pybind11@@6B@
-	WRAP ??_7buffer_error@pybind11@@6B@
-	WRAP ??_7builtin_exception@pybind11@@6B@
-	WRAP ??_7cast_error@pybind11@@6B@
-	WRAP ??_7error_already_set@pybind11@@6B@
-	WRAP ??_7import_error@pybind11@@6B@
-	WRAP ??_7index_error@pybind11@@6B@
-	WRAP ??_7key_error@pybind11@@6B@
-	WRAP ??_7reference_cast_error@pybind11@@6B@
-	WRAP ??_7stop_iteration@pybind11@@6B@
-	WRAP ??_7type_error@pybind11@@6B@
-	WRAP ??_7value_error@pybind11@@6B@
 	WRAP ?Create@FOOTPRINT_PREVIEW_PANEL_BASE@@SAPEAV1@PEAVwxWindow@@AEAVKIWAY@@@Z
 	WRAP ?DisplayErrors@FOOTPRINT_LIST@@QEAAXPEAVwxTopLevelWindow@@@Z
 	WRAP ?FindPlugin@SCH_IO_MGR@@SAPEAVSCH_IO@@W4SCH_FILE_T@1@@Z

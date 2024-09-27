@@ -11,13 +11,6 @@ export PATH=/c/Program\ Files\ \(x86\)/Microsoft\ Visual\ Studio\ 14.0/VC/bin/am
 grep ';' data.ida | cut -d';' -f2 | paste - - | sed 's/ Exported entry \([[:digit:]]\+\)\./\1\t/;s/void[^[]*\[//;s/\])()//;s/ //g' > data.lst
 ~~~
 
-
-
-
-
-
-
-
 ### .def file EXPORTS directive format
 ~~~
 EXPORTS 
