@@ -7,6 +7,8 @@ static void BarA() { fprintf(stderr, "BarA!\n");  }
 static void FooB() { fprintf(stderr, "FoooB!\n"); }
 static void BarB() { fprintf(stderr, "BarB!\n");  }
 
+extern "C" __declspec(dllexport) void CallFoo() { fprintf(stderr, "CallFoo!\n"); }
+
 typedef void (*fptr)();
 
 fptr Table_133[] = { FooA, BarA };

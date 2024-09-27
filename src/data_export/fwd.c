@@ -30,6 +30,7 @@ BEGIN_DD_ENTRY2
 #include "entries.h"
 END_DD_ENTRY2
 
+/*
 extern "C" __declspec(dllexport) void LoadUtil()
 {
     HMODULE hModule = LoadLibraryW(L"util.dll");
@@ -39,6 +40,7 @@ extern "C" __declspec(dllexport) void LoadUtil()
         return;
     }
 }
+*/
 
 static HMODULE DLLBase = 0;
 

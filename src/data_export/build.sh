@@ -18,26 +18,37 @@ LIBRARY util
 EXPORTS
 ??_7FOOTPRINT_INFO@@6B@=Table_133 DATA
 ??_7FOOTPRINT_LIST@@6B@=Table_134 DATA
+CallFoo
 EOF
 
 # build util.dll
 ${GCC} ${CC_OPTS} -c -o util.o util.c
 ${GCC} ${LINK_OPTS} -o util.dll -shared util.o util.def -Wl,--subsystem,windows
 
-# define exports for fwd.dll
+# define DATA exports for fwd.dll
 # export_name=c_symbol @# DATA
 
 cat << EOF > fwd_exp.def
-LIBRARY fwd_lib
+LIBRARY fwd
 EXPORTS
 ??_7FOOTPRINT_INFO@@6B@=Table_133 @3 DATA
 ??_7FOOTPRINT_LIST@@6B@=Table_134 @2 DATA
-LoadUtil @1
 EOF
+
+# define FUNCIION export as forwarded delay import 
+cat << EOF > fwd_imp.def
+LIBRARY util
+EXPORTS
+_CallFoo==CallFoo
+EOF
+
+${DLLTOOL} -v --input-def fwd_imp.def --output-delaylib libfwdutil.a
+
+${AS} wraps.s -o wraps.o
 
 # build wrapper library
 ${GCC} ${CC_OPTS} -c -o fwd.o fwd.c
-${GCC} ${LINK_OPTS} -o fwd.dll -shared fwd.o fwd_exp.def -Wl,--subsystem,windows -lntdll
+${GCC} ${LINK_OPTS} -o fwd.dll -shared fwd.o wraps.o fwd_exp.def -Wl,--subsystem,windows -lntdll -L. -lfwdutil
 ${CV2PDB64} fwd.dll
 
 # build test.exe

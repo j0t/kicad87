@@ -1,3 +1,6 @@
-typedef void (*fptr)();
+extern "C" __declspec(dllimport) void _CallFoo();
 
-fptr Table[2];
+extern "C" __declspec(dllexport) void CallFoo()
+{
+    _CallFoo(); // if should be deffered load
+}
