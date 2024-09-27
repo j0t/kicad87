@@ -1,0 +1,63 @@
+.rdata:0000000180B4A5C0 ; Exported entry 106. ??_7FOOTPRINT_INFO@@6B@
+.rdata:0000000180B4A5C0                 public ??_7FOOTPRINT_INFO@@6B@
+.rdata:0000000180B4A5C0 ; void (__fastcall *const FOOTPRINT_INFO::`vftable'[16])()
+
+.rdata:0000000180B4A640 ; Exported entry 107. ??_7FOOTPRINT_LIST@@6B@
+.rdata:0000000180B4A640                 public ??_7FOOTPRINT_LIST@@6B@
+.rdata:0000000180B4A640 ; void (__fastcall *const FOOTPRINT_LIST::`vftable'[6])()
+
+.rdata:0000000180B4AF20 ; Exported entry 108. ??_7FOOTPRINT_PREVIEW_PANEL_BASE@@6B@
+.rdata:0000000180B4AF20                 public ??_7FOOTPRINT_PREVIEW_PANEL_BASE@@6B@
+.rdata:0000000180B4AF20 ; void (__fastcall *const FOOTPRINT_PREVIEW_PANEL_BASE::`vftable'[10])()
+
+.rdata:0000000180B0CDF0 ; Exported entry 109. ??_7LIB_TREE_ITEM@@6B@
+.rdata:0000000180B0CDF0                 public ??_7LIB_TREE_ITEM@@6B@
+.rdata:0000000180B0CDF0 ; void (__fastcall *const LIB_TREE_ITEM::`vftable'[15])()
+
+.rdata:0000000180C6C8E0 ; Exported entry 110. ??_7attribute_error@pybind11@@6B@
+.rdata:0000000180C6C8E0                 public ??_7attribute_error@pybind11@@6B@
+.rdata:0000000180C6C8E0 ; void (__fastcall *const pybind11::attribute_error::`vftable'[4])()
+
+.rdata:0000000180C6C8A0 ; Exported entry 111. ??_7buffer_error@pybind11@@6B@
+.rdata:0000000180C6C8A0                 public ??_7buffer_error@pybind11@@6B@
+.rdata:0000000180C6C8A0 ; void (__fastcall *const pybind11::buffer_error::`vftable'[4])()
+
+.rdata:0000000180C6C7E0 ; Exported entry 112. ??_7builtin_exception@pybind11@@6B@
+.rdata:0000000180C6C7E0                 public ??_7builtin_exception@pybind11@@6B@
+.rdata:0000000180C6C7E0 ; void (__fastcall *const pybind11::builtin_exception::`vftable'[4])()
+
+.rdata:0000000180C6C900 ; Exported entry 113. ??_7cast_error@pybind11@@6B@
+.rdata:0000000180C6C900                 public ??_7cast_error@pybind11@@6B@
+.rdata:0000000180C6C900 ; void (__fastcall *const pybind11::cast_error::`vftable'[4])()
+
+.rdata:0000000180C6C940 ; Exported entry 114. ??_7error_already_set@pybind11@@6B@
+.rdata:0000000180C6C940                 public ??_7error_already_set@pybind11@@6B@
+.rdata:0000000180C6C940 ; void (__fastcall *const pybind11::error_already_set::`vftable'[3])()
+
+.rdata:0000000180C6C8C0 ; Exported entry 115. ??_7import_error@pybind11@@6B@
+.rdata:0000000180C6C8C0                 public ??_7import_error@pybind11@@6B@
+.rdata:0000000180C6C8C0 ; void (__fastcall *const pybind11::import_error::`vftable'[4])()
+
+.rdata:0000000180C6C820 ; Exported entry 116. ??_7index_error@pybind11@@6B@
+.rdata:0000000180C6C820                 public ??_7index_error@pybind11@@6B@
+.rdata:0000000180C6C820 ; void (__fastcall *const pybind11::index_error::`vftable'[4])()
+
+.rdata:0000000180C6C840 ; Exported entry 117. ??_7key_error@pybind11@@6B@
+.rdata:0000000180C6C840                 public ??_7key_error@pybind11@@6B@
+.rdata:0000000180C6C840 ; void (__fastcall *const pybind11::key_error::`vftable'[4])()
+
+.rdata:0000000180C6C920 ; Exported entry 118. ??_7reference_cast_error@pybind11@@6B@
+.rdata:0000000180C6C920                 public ??_7reference_cast_error@pybind11@@6B@
+.rdata:0000000180C6C920 ; void (__fastcall *const pybind11::reference_cast_error::`vftable'[4])()
+
+.rdata:0000000180C6C800 ; Exported entry 119. ??_7stop_iteration@pybind11@@6B@
+.rdata:0000000180C6C800                 public ??_7stop_iteration@pybind11@@6B@
+.rdata:0000000180C6C800 ; void (__fastcall *const pybind11::stop_iteration::`vftable'[4])()
+
+.rdata:0000000180C6C880 ; Exported entry 120. ??_7type_error@pybind11@@6B@
+.rdata:0000000180C6C880                 public ??_7type_error@pybind11@@6B@
+.rdata:0000000180C6C880 ; void (__fastcall *const pybind11::type_error::`vftable'[4])()
+
+.rdata:0000000180C6C860 ; Exported entry 121. ??_7value_error@pybind11@@6B@
+.rdata:0000000180C6C860                 public ??_7value_error@pybind11@@6B@
+.rdata:0000000180C6C860 ; void (__fastcall *const pybind11::value_error::`vftable'[4])()
