@@ -1,6 +1,14 @@
 # An experiments with handling of missing imports/exports in PE file
 
-add MSVS build tools to PATH to make `cv2pdb64` morking
+## How to use/install
+
+1. `mv ${kicad}/bin/_eeschema.dll ${kicad}/bin/__eeschema.dll`
+2. build `_eeschema.dll`
+3. `cp _eeschema.dll ${kicad}/bin/`
+
+## Build and develop
+
+add MSVS build tools to PATH to make `cv2pdb64` working:
 
 ~~~
 export PATH=/c/Program\ Files\ \(x86\)/Microsoft\ Visual\ Studio\ 14.0/VC/bin/amd64:$PATH
