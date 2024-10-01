@@ -11,6 +11,17 @@
 
 #include "ldr_dll.h"
 
+#if ! defined(SRC_DLL_NAME)
+#error "Please define SRC_DLL_NAME"
+#endif
+
+#define RVA(T,B,O) ((T)(O+(char *)B))
+
+#define T(X) L##X
+#define ADD_DLL_EXT(X) T(X)".dll"
+#define STR(X) #X
+#define MAKE_DLL_NAME(X) ADD_DLL_EXT(STR(X))
+
 #define DD_ENTRY1(D,N,S) void * Table_##D[S];
 #define BEGIN_DD_ENTRY2 static DataDescriptor descs[] = {
 #define DD_ENTRY2(D,N,S) {N,Table_##D,sizeof(Table_##D)},
@@ -66,8 +77,6 @@ static HANDLE WINAPI CreateFile2Impl(
                         NULL);
         }
 }
-
-#define RVA(T,B,O) ((T)(O+(char *)B))
 
 static BOOL analyzeImportDescriptor( PIMAGE_IMPORT_DESCRIPTOR importDescriptor
                             , HMODULE baseAddress
@@ -160,8 +169,8 @@ static VOID CALLBACK OnLoadHook( ULONG NotificationReason,
     
     if( NotificationReason != LDR_DLL_NOTIFICATION_REASON_LOADED )
         return;
-
-    if( !_wcsnicmp( L"_eeschema.DLL", BaseDllName->Buffer, BaseDllName->Length/sizeof(WCHAR)) ) // loading test.dll
+   
+    if( !_wcsnicmp( MAKE_DLL_NAME(SRC_DLL_NAME), BaseDllName->Buffer, BaseDllName->Length/sizeof(WCHAR)) ) // loading test.dll
     {
          // 1. step: change import CreateFile2 -> CreateFileW
          
