@@ -56,7 +56,7 @@ cat ${DEF1} | sed '1,2d;s/.*==\(.*\)/\tWRAP \1/g' >> wraps.s
 ${AS} wraps.s -o wraps.o
 
 # build wrapper dll
-${GCC} ${CC_OPTS} -DSRC_DLL_NAME=${WRP_NAME} -c -o fwd_util.o fwd_util.c
-${GCC} ${LINK_OPTS} -o ${WRP_NAME}.dll -shared fwd_util.o wraps.o ${DEF2} -Wl,--subsystem,windows -lntdll -L. -l${SRC_NAME}
+${GCC} ${CC_OPTS} -DSRC_DLL_NAME=${SRC_NAME} -c -o fwd_util.o fwd_util.c
+${GCC} ${LINK_OPTS} -s -o ${WRP_NAME}.dll -shared fwd_util.o wraps.o ${DEF2} -Wl,--subsystem,windows -lntdll -L. -l${SRC_NAME}
 
-${CV2PDB64} ${WRP_NAME}.dll
+#${CV2PDB64} ${WRP_NAME}.dll
