@@ -1,0 +1,18 @@
+LIBRARY _eeschema
+EXPORTS
+??_7FOOTPRINT_INFO@@6B@=Table_106 @106 DATA
+??_7FOOTPRINT_LIST@@6B@=Table_107 @107 DATA
+??_7FOOTPRINT_PREVIEW_PANEL_BASE@@6B@=Table_108 @108 DATA
+??_7LIB_TREE_ITEM@@6B@=Table_109 @109 DATA
+??_7attribute_error@pybind11@@6B@=Table_110 @110 DATA
+??_7buffer_error@pybind11@@6B@=Table_111 @111 DATA
+??_7builtin_exception@pybind11@@6B@=Table_112 @112 DATA
+??_7cast_error@pybind11@@6B@=Table_113 @113 DATA
+??_7error_already_set@pybind11@@6B@=Table_114 @114 DATA
+??_7import_error@pybind11@@6B@=Table_115 @115 DATA
+??_7index_error@pybind11@@6B@=Table_116 @116 DATA
+??_7key_error@pybind11@@6B@=Table_117 @117 DATA
+??_7reference_cast_error@pybind11@@6B@=Table_118 @118 DATA
+??_7stop_iteration@pybind11@@6B@=Table_119 @119 DATA
+??_7type_error@pybind11@@6B@=Table_120 @120 DATA
+??_7value_error@pybind11@@6B@=Table_121 @121 DATA
