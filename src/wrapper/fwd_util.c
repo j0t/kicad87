@@ -106,16 +106,26 @@ static BOOL analyzeImportDescriptor( PIMAGE_IMPORT_DESCRIPTOR importDescriptor
 
        if (!stricmp(apiName, nameData->Name))
        {
+           DWORD OldProtect = 0;
            if( newapiName )
            {
                // CreateFile2 -> CreateFileW
-               if( strlen(apiName) != strlen(newapiName) )
+               int len = strlen(nameData->Name);
+               if( len != strlen(newapiName) )
                     return FALSE; // ERROR: names must have the same length
-                
+
+               if( !VirtualProtect( nameData->Name, len, PAGE_READWRITE, &OldProtect ) )
+                   return FALSE;
                strcpy( nameData->Name, newapiName );
+               VirtualProtect( nameData->Name, len, OldProtect, &OldProtect );
            }
-           else               
+           else
+           {
+               if( !VirtualProtect( (void *)thunkIAT, sizeof(IMAGE_THUNK_DATA), PAGE_READWRITE, &OldProtect ) )
+                   return FALSE;
                thunkIAT->u1.Function = function;
+               VirtualProtect( (void *)thunkIAT, sizeof(IMAGE_THUNK_DATA), OldProtect, &OldProtect );
+           }
            
            return TRUE;
        }
@@ -173,12 +183,14 @@ static VOID CALLBACK OnLoadHook( ULONG NotificationReason,
     if( !_wcsnicmp( MAKE_DLL_NAME(SRC_DLL_NAME), BaseDllName->Buffer, BaseDllName->Length/sizeof(WCHAR)) ) // loading test.dll
     {
          // 1. step: change import CreateFile2 -> CreateFileW
+         FRRINTF(stderr, "fwd_util.OnLoadHook.1\n" );
          
          // save DLLBase and K32Descr for step 2.
-         DLLBase = (HMODULE)NotificationData->Loaded.DllBase;         
+         DLLBase = (HMODULE)NotificationData->Loaded.DllBase;
          K32Descr = FindImportDescriptor( DLLBase, "KERNEL32.dll" );
          if( K32Descr )
          {
+             FRRINTF(stderr, "fwd_util.OnLoadHook.2 FindImportDescriptor %x\n", K32Descr );
              BOOL r = analyzeImportDescriptor( K32Descr, DLLBase, "CreateFile2", "CreateFileW", 0 );
              FRRINTF(stderr, "fwd_util.OnLoadHook: CreateFile2 -> CreateFileW: %s\n", r ? "OK":"FAILED" );
          }
